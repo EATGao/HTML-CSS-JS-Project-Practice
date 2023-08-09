@@ -1,4 +1,4 @@
-import { cart } from '../data/cart.js'
+import { cart, addToCart } from '../data/cart.js'
 import { products } from '../data/products.js'
 
 let productsHTML = '';
@@ -59,44 +59,30 @@ products.forEach((product) => {
 document.querySelector('.js-products-grid').innerHTML = productsHTML;
 let addedMessageTimeoutId;
 
+function updateCartQuantity() {
+    let cartQuantity = 0;
+
+    cart.forEach((cartItem) => {
+        cartQuantity += cartItem.quantity;
+    })
+
+    if (cartQuantity > 99) {
+        document.querySelector('.js-cart-quantity').innerText = '99+';
+    } else {
+        document.querySelector('.js-cart-quantity').innerText = cartQuantity;
+    }
+
+}
+
 document.querySelectorAll('.js-add-to-cart').forEach((button) => {
     button.addEventListener('click', () => {
 
-        //add item to cart
         const { productId } = button.dataset;
-        console.log(productId)
 
-        // check if the item is in the cart
-        let noMatchingItem = true;
-        const quantity = Number(document.querySelector(`.js-quantity-selector-${productId}`).value);
-        console.log(quantity);
-        for (let item of cart) {
-            if (productId === item.productId) {
-                item.quantity += quantity;
-                noMatchingItem = false;
-                break;
-            }
-        }
-
-        if (noMatchingItem) {
-            cart.push({
-                productId, 
-                quantity
-            });
-        }
+        addToCart(productId);
 
         // update cart quantity number
-        let cartQuantity = 0;
-
-        cart.forEach((item) => {
-            cartQuantity += item.quantity;
-        })
-
-        if (cartQuantity > 99) {
-            document.querySelector('.js-cart-quantity').innerText = '99+';
-        } else {
-            document.querySelector('.js-cart-quantity').innerText = cartQuantity;
-        }
+        updateCartQuantity();
 
         // added signal shows
         const addedSignal = document.querySelector(`.js-added-to-cart-${productId}`);
