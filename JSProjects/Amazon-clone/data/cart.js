@@ -1,4 +1,7 @@
-export const cart = [];
+export const cart = [{
+    productId: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
+    quantity: 2
+}];
 
 export function addToCart(productId) {
     // check if the item is in the cart
@@ -18,4 +21,14 @@ export function addToCart(productId) {
             quantity
         });
     }
+}
+
+export function totalItemQuantityInCart() {
+    let cartQuantity = 0;
+
+    cart.forEach((cartItem) => {
+        cartQuantity += cartItem.quantity;
+    })
+
+    return cartQuantity;
 }

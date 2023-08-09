@@ -1,5 +1,6 @@
-import { cart, addToCart } from '../data/cart.js'
-import { products } from '../data/products.js'
+import { addToCart, totalItemQuantityInCart } from '../data/cart.js';
+import { products } from '../data/products.js';
+import { formatCurrency } from './utils/money.js';
 
 let productsHTML = '';
 
@@ -24,7 +25,7 @@ products.forEach((product) => {
         </div>
 
         <div class="product-price">
-            $${(product.priceCents / 100).toFixed(2)}
+            $${ formatCurrency(product.priceCents) }
         </div>
 
         <div class="product-quantity-container">
@@ -59,12 +60,8 @@ products.forEach((product) => {
 document.querySelector('.js-products-grid').innerHTML = productsHTML;
 let addedMessageTimeoutId;
 
-function updateCartQuantity() {
-    let cartQuantity = 0;
-
-    cart.forEach((cartItem) => {
-        cartQuantity += cartItem.quantity;
-    })
+ function updateCartQuantity() {
+    const cartQuantity = totalItemQuantityInCart();
 
     if (cartQuantity > 99) {
         document.querySelector('.js-cart-quantity').innerText = '99+';
