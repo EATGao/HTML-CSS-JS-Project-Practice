@@ -4,16 +4,7 @@ import { formatCurrency } from './utils/money.js';
 
 
 let productHTML = '';
-updateCheckoutItemsNumber();
 
-function updateCheckoutItemsNumber() {
-    const cartQuantity = totalItemQuantityInCart();
-    console.log(cartQuantity);
-    document.querySelector('.js-return-to-home-link').innerText = cartQuantity + ' items'
-    document.querySelector('.js-order-summary-items').innerText = `Items(${cartQuantity}):`
-}
-
-let totalPrice = 0;
 cart.forEach((cartItem) => {
 
     const { productId } = cartItem;
@@ -25,8 +16,6 @@ cart.forEach((cartItem) => {
             matchingProduct = product;
         }
     });
-
-    totalPrice += matchingProduct.priceCents * cartItem.quantity;
 
     productHTML = productHTML + `
     <div class="cart-item-container js-cart-item-container-${matchingProduct.id}">
@@ -117,6 +106,7 @@ document.querySelectorAll('.js-delete-link').forEach((link) => {
         removeFromCart(productId);
         updateCheckoutItemsNumber();
         document.querySelector(`.js-cart-item-container-${productId}`).remove();
+        updateOrderSummary();
     });
 });
 
@@ -141,7 +131,6 @@ document.querySelectorAll('.save-quantity-link').forEach((link) => {
     link.addEventListener('click', () => {
         const {productId} = link.dataset;
         link.classList.remove('visible');
-        console.log(productId)
 
         document.querySelector(`.js-quantity-input-${productId}`).classList.remove('visible');
         const changedQuantity = document.querySelector(`.js-quantity-input-${productId}`).value;
@@ -150,11 +139,85 @@ document.querySelectorAll('.save-quantity-link').forEach((link) => {
         document.querySelector(`.js-update-quantity-link-${productId}`).classList.remove('invisible');
 
         addToCart(productId, Number(changedQuantity), true);
-
+        updateOrderSummary()
         updateCheckoutItemsNumber();
-    })
-})
+    });
+});
 
 function updateOrderSummary() {
+    // item total price
+    let totalPriceCents = 0;
+    cart.forEach((cartItem) => {
 
+        const { productId } = cartItem;
+
+        products.forEach((product) => {
+            if (product.id === productId) {
+                totalPriceCents += product.priceCents * cartItem.quantity;
+            }
+        });
+    });
+
+    // shipping total
+
+    let shippingPriceCents = 0;
+
+
+    // total before tax
+    const totalBeforeTax = totalPriceCents + shippingPriceCents;
+
+    // tax
+    const tax = (totalPriceCents + shippingPriceCents) * 0.1;
+
+    // order total
+    const orderTotal = totalBeforeTax + tax;
+
+    document.querySelector('.payment-summary').innerHTML = `
+        <div class="payment-summary-title">
+            Order Summary
+          </div>
+
+          <div class="payment-summary-row">
+            <div class="js-order-summary-items">Items (0):</div>
+            <div class="payment-summary-money">$${formatCurrency(totalPriceCents)}</div>
+          </div>
+
+          <div class="payment-summary-row">
+            <div>Shipping &amp; handling:</div>
+            <div class="payment-summary-money">$${formatCurrency(shippingPriceCents)}</div>
+          </div>
+
+          <div class="payment-summary-row subtotal-row">
+            <div>Total before tax:</div>
+            <div class="payment-summary-money">$${formatCurrency(totalBeforeTax)}</div>
+          </div>
+
+          <div class="payment-summary-row">
+            <div>Estimated tax (10%):</div>
+            <div class="payment-summary-money">$${formatCurrency(tax)}</div>
+          </div>
+
+          <div class="payment-summary-row total-row">
+            <div>Order total:</div>
+            <div class="payment-summary-money">$${formatCurrency(orderTotal)}</div>
+          </div>
+
+          <button class="place-order-button button-primary">
+            Place your order
+          </button>
+    `;
+
+
+
+}
+
+updateOrderSummary();
+
+updateCheckoutItemsNumber();
+
+function updateCheckoutItemsNumber() {
+    const cartQuantity = totalItemQuantityInCart();
+    console.log(cartQuantity);
+    document.querySelector('.js-return-to-home-link').innerText = cartQuantity + ' items'
+    document.querySelector('.js-order-summary-items').innerText = `Items(${cartQuantity}):`
 }
