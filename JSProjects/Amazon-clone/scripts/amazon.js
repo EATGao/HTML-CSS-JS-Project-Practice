@@ -68,8 +68,9 @@ let addedMessageTimeoutId;
     } else {
         document.querySelector('.js-cart-quantity').innerText = cartQuantity;
     }
-
 }
+
+updateCartQuantity();
 
 document.querySelectorAll('.js-add-to-cart').forEach((button) => {
     button.addEventListener('click', () => {
