@@ -56,7 +56,8 @@ cart.forEach((cartItem) => {
             <div class="delivery-option">
             <input type="radio" checked
                 class="delivery-option-input"
-                name="delivery-option-${matchingProduct.id}">
+                name="delivery-option-${matchingProduct.id}"
+                value="0">
             <div>
                 <div class="delivery-option-date">
                 Tuesday, June 21
@@ -69,7 +70,8 @@ cart.forEach((cartItem) => {
             <div class="delivery-option">
             <input type="radio"
                 class="delivery-option-input"
-                name="delivery-option-${matchingProduct.id}">
+                name="delivery-option-${matchingProduct.id}"
+                value="499">
             <div>
                 <div class="delivery-option-date">
                 Wednesday, June 15
@@ -82,7 +84,8 @@ cart.forEach((cartItem) => {
             <div class="delivery-option">
             <input type="radio"
                 class="delivery-option-input"
-                name="delivery-option-${matchingProduct.id}">
+                name="delivery-option-${matchingProduct.id}"
+                value="999">
             <div>
                 <div class="delivery-option-date">
                 Monday, June 13
@@ -144,6 +147,14 @@ document.querySelectorAll('.save-quantity-link').forEach((link) => {
     });
 });
 
+const radios = document.querySelectorAll('input[type=radio]');
+
+for (let i = 0; i < radios.length; i++) {
+  radios[i].addEventListener('click', function() {
+    updateOrderSummary();
+  });
+}
+
 function updateOrderSummary() {
     // item total price
     let totalPriceCents = 0;
@@ -161,6 +172,13 @@ function updateOrderSummary() {
     // shipping total
 
     let shippingPriceCents = 0;
+    const options = document.querySelectorAll('.delivery-option-input');
+
+    options.forEach((option) => {
+        if (option.checked) {
+            shippingPriceCents += Number(option.value);
+        }
+    });
 
 
     // total before tax
@@ -217,7 +235,7 @@ updateCheckoutItemsNumber();
 
 function updateCheckoutItemsNumber() {
     const cartQuantity = totalItemQuantityInCart();
-    console.log(cartQuantity);
+
     document.querySelector('.js-return-to-home-link').innerText = cartQuantity + ' items'
     document.querySelector('.js-order-summary-items').innerText = `Items(${cartQuantity}):`
 }

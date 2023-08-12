@@ -47,7 +47,6 @@ export function totalItemQuantityInCart() {
 
     cart.forEach((cartItem) => {
         cartQuantity += cartItem.quantity;
-        console.log(cartItem.quantity);
     })
 
     return cartQuantity;
